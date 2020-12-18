@@ -14,6 +14,9 @@ class AnilloEntero:
     def __call__(self, valor):
         return self._Element(anillo=self, valor=valor)
 
+    def __str__(self):
+        return "Z_{0}".format(self._m)
+
     class _Element:
 
         def __init__(self, anillo, valor):
@@ -100,3 +103,6 @@ class AnilloEntero:
 
         def __neq__(self, other):
             return self._valor != self._extract_value(other)
+
+        def __str__(self):
+            return "{0} in Z_{1}".format(self._valor, self._anillo._m)
