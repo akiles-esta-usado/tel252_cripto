@@ -1,9 +1,13 @@
 import asyncio
 from aiohttp import ClientSession
 
+from Crypto.Cipher import AES
 from Crypto.PublicKey import ECC
+from Crypto.Random import get_random_bytes
 
 from certificate_operations import obtainCertificate, verifyCertificate
+
+from functions import updateSessionKey
 
 from constants import URL
 
@@ -14,8 +18,8 @@ keys = {
     "priv": None,
     "pub": None,
     "secret_shared": None,
-    "master_key": None,
-    "session_key": None
+    "master": None,
+    "session": None
 }
 
 ID0 = 10
@@ -29,13 +33,13 @@ def setKeys():
 
     keys["priv"] = ECC.generate(curve="p256")
     keys["pub"] = keys["priv"].public_key()
+    keys['session'] = int.from_bytes(get_random_bytes(16), "big")  # NONCE
 
     # guardar en algún archivo.
 
 
 async def main():
     global ID0
-    global url
 
     setKeys()
 
@@ -60,12 +64,14 @@ async def main():
         # Generar la llave secreta compartida y la llave maestra
         k_pub_server = ECC.import_key(server_cert["k_pub"])
 
-        k_shared_secret = keys["priv"].d * k_pub_server.pointQ
+        keys["secret_shared"] = keys["priv"].d * k_pub_server.pointQ
+        keys['master'] = keys["secret_shared"].x.to_bytes()[0:16]
 
-        k_master = k_shared_secret.x.to_bytes()[0:15]
+        # print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
+        # print(f'llave maestra :{keys["master"]}')
 
-        print(f"llave secreta compartida (x) :{k_shared_secret.x}")
-        print(f"llave maestra :{k_master}")
+        # keys['session'] = updateSessionKey(keys['master'], keys['session'])
+        # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
 
         return
 

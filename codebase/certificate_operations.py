@@ -40,16 +40,24 @@ def verifyCertificate(cert, k_pub):
         return False
 
 
-async def obtainCertificate(session, id, k_priv, k_pub, ca_k_pub):
+async def obtainCertificate(session, id, k_priv, k_pub, ca_k_pub, nonce=-1):
     """
     Las llaves deben ingresar como objetos EccKey
     El certificado se retorna con formatos PEM, base64.
     """
+    message = None
 
-    message = {
-        "id": id,
-        "k_pub": k_pub.export_key(format="PEM")
-    }
+    if (nonce) == -1:
+        message = {
+            "id": id,
+            "k_pub": k_pub.export_key(format="PEM")
+        }
+    else:
+        message = {
+            "id": id,
+            "k_pub": k_pub.export_key(format="PEM"),
+            "k_session": nonce
+        }
 
     hash_digest = SHA256.new(
         json.dumps(message).encode('utf-8')
