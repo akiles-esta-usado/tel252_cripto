@@ -2,12 +2,6 @@ import asyncio
 from aiohttp import ClientSession
 
 from Crypto.PublicKey import ECC
-from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.Hash import SHA256
-from Crypto.Signature import DSS
-
-import base64
-import json
 
 from certificate_operations import obtainCertificate, verifyCertificate
 
@@ -45,6 +39,7 @@ async def main():
     setKeys()
 
     async with ClientSession() as session:
+
         # Generar certificados de mis llaves
         my_cert = await obtainCertificate(session, ID0, keys["priv"], keys["pub"], keys["CA_pub"])
 
@@ -52,16 +47,32 @@ async def main():
             print("El certificado no se pudo obtener")
             exit(-1)
 
-        print(my_cert)
-
-        return
-
-        # Enviar certificado a servidor, obtener certificado de servidor
-        res = await session.post(url + "gen_shared_key/", json=my_cert)
+        # Intercambio de certificados con servidor
+        res = await session.post("http://localhost:8080/gen_shared_key", json=my_cert)
         server_cert = await res.json()
 
-        print(f"Certificado de servidor: {server_cert}")
+        # Verificar certificado del servidor
+        if(verifyCertificate(server_cert, keys["CA_pub"]) == False):
+            print("El certificado del servidor no es válido")
+            exit(-1)
+
+        # Generar la llave secreta compartida y la llave maestra
+        k_pub_server = ECC.import_key(server_cert["k_pub"])
+
+        k_shared_secret = keys["priv"].d * k_pub_server.pointQ
+
+        k_master = k_shared_secret.x.to_bytes()[0:15]
+
+        print(f"llave secreta compartida (x) :{k_shared_secret.x}")
+        print(f"llave maestra :{k_master}")
+
         return
+
+        # Generar la llave de sesión
+
+        return
+
+        print(f"Certificado de servidor: {server_cert}")
 
         if(verifyCertificate(server_cert, keys["CA_pub"]) == False):
             print("El certificado no es válido")

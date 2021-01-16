@@ -14,13 +14,13 @@ def verifyCertificate(cert, k_pub):
     """
     cert: {
         id: string, number
-        k_pub: str PEM
+        k_pub: 
         sign: bytes
     }
     """
     message = {
-        "id": cert.id,
-        "k_pub": cert.k_pub
+        "id": cert["id"],
+        "k_pub": cert["k_pub"]
     }
 
     bytes_message = json.dumps(message).encode('utf-8')
@@ -32,51 +32,41 @@ def verifyCertificate(cert, k_pub):
 
     try:
         verifier.verify(h, sign)
-        print("El certificado es auténtico.")
-
         return True
 
     except ValueError:
-        print("El certificado no es auténtico.")
         return False
 
 
 async def obtainCertificate(session, id, k_priv, k_pub, ca_k_pub):
+    """
+    Las llaves deben ingresar como objetos EccKey
+    El certificado se retorna con formatos PEM, base64.
+    """
+
     message = {
         "id": id,
         "k_pub": k_pub.export_key(format="PEM")
     }
 
-    bytes_message = json.dumps(message).encode('utf-8')
-    h = SHA256.new(bytes_message)
+    hash_digest = SHA256.new(
+        json.dumps(message).encode('utf-8')
+    )
 
     signer = DSS.new(k_priv, 'fips-186-3')
-    sign = signer.sign(h)
+    message_sign = signer.sign(hash_digest)
 
-    to_CA = {
-        "id": id,
-        "k_pub": k_pub.export_key(format="PEM"),
-        "sign": base64.urlsafe_b64encode(sign).decode("utf-8")
-    }
+    message["sign"] = base64.urlsafe_b64encode(message_sign).decode("utf-8")
 
-    from_CA = await session.post("http://localhost:8080/get_cert", json=to_CA)
+    resp = await session.post("http://localhost:8080/get_cert", json=message)
+    cert = await resp.json()
 
-    data = await from_CA.json()
-
-    sign = base64.urlsafe_b64decode(data["sign"])
-
+    cert_sign = base64.urlsafe_b64decode(cert["sign"])
     verifier = DSS.new(ca_k_pub, 'fips-186-3')
 
     try:
-        verifier.verify(h, sign)
-        print("El certificado es auténtico.")
-
-        return {
-            "id": id,
-            "k_pub": k_pub,
-            "sign": sign
-        }
+        verifier.verify(hash_digest, cert_sign)
+        return cert
 
     except ValueError:
-        print("El certificado no es auténtico.")
         return None
