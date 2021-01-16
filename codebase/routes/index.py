@@ -7,6 +7,11 @@ index_router = web.RouteTableDef()
 
 @index_router.get("/")
 async def index_handle_get(request):
+
+    print(f"request url: {request.url}")
+    print(f"request cookie: {request.cookies}")
+    print(f"request query: {request.query}")
+
     session = await get_session(request)
 
     if ("visited" in session):
