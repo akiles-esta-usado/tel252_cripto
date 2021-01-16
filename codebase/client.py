@@ -5,6 +5,8 @@ from Crypto.PublicKey import ECC
 
 from certificate_operations import obtainCertificate, verifyCertificate
 
+from constants import URL
+
 # from certificate_operations import gen_cert, ver_cert
 
 keys = {
@@ -17,7 +19,6 @@ keys = {
 }
 
 ID0 = 10
-url = "http://localhost:8080/"
 
 
 def setKeys():
@@ -48,7 +49,7 @@ async def main():
             exit(-1)
 
         # Intercambio de certificados con servidor
-        res = await session.post("http://localhost:8080/gen_shared_key", json=my_cert)
+        res = await session.post(URL + "gen_shared_key", json=my_cert)
         server_cert = await res.json()
 
         # Verificar certificado del servidor

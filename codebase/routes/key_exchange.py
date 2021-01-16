@@ -10,7 +10,7 @@ import aioredis
 
 from certificate_operations import obtainCertificate, verifyCertificate
 
-url = "http://localhost:8080/"
+from constants import URL
 
 exchange_router = web.RouteTableDef()
 

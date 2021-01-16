@@ -9,6 +9,8 @@ from Crypto.Signature import DSS
 import base64
 import json
 
+from constants import URL
+
 
 def verifyCertificate(cert, k_pub):
     """
@@ -58,7 +60,7 @@ async def obtainCertificate(session, id, k_priv, k_pub, ca_k_pub):
 
     message["sign"] = base64.urlsafe_b64encode(message_sign).decode("utf-8")
 
-    resp = await session.post("http://localhost:8080/get_cert", json=message)
+    resp = await session.post(URL + "get_cert", json=message)
     cert = await resp.json()
 
     cert_sign = base64.urlsafe_b64decode(cert["sign"])
