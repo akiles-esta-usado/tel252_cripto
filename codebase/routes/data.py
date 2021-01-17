@@ -25,10 +25,6 @@ async def data_post_handler(request):
     id = int.from_bytes(jv["header"], "big")
     key = getSessionKey(id)
 
-    print(f"data.postHandler | id:   {id}")
-    print(f"data.postHandler | jv:   {jv}")
-    print(f"data.postHandler | key: {key}")
-
     try:
 
         cipher = AES.new(key,
