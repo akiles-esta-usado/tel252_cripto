@@ -1,15 +1,10 @@
-import asyncio
-from aiohttp import ClientSession
-
-from Crypto.PublicKey import ECC
-from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
 from Crypto.Signature import DSS
 
 import base64
 import json
 
-from constants import URL
+from globals import URL
 
 
 def verifyCertificate(cert, k_pub):
@@ -47,7 +42,7 @@ async def obtainCertificate(session, id, k_priv, k_pub, ca_k_pub, nonce=-1):
     """
     message = None
 
-    if (nonce) == -1:
+    if (nonce == -1):
         message = {
             "id": id,
             "k_pub": k_pub.export_key(format="PEM")

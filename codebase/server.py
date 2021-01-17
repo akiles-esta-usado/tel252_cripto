@@ -1,3 +1,4 @@
+from globals import showKeys, setCAKeys
 import sys
 from aiohttp import web
 import redis
@@ -19,12 +20,14 @@ def setKeys():
 async def make_app():
     app = web.Application()
 
-    setKeys()
+    # setKeys()
+    setCAKeys()
+    showKeys()
 
     app.add_routes(index_router)
     app.add_routes(cert_router)
     app.add_routes(exchange_router)
-    app.add_routes(nonce_router)
+    # app.add_routes(nonce_router)
 
     return app
 

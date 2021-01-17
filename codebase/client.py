@@ -7,9 +7,7 @@ from Crypto.Random import get_random_bytes
 
 from certificate_operations import obtainCertificate, verifyCertificate
 
-from functions import updateSessionKey
-
-from constants import URL
+from globals import URL
 
 # from certificate_operations import gen_cert, ver_cert
 
