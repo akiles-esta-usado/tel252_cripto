@@ -1,14 +1,35 @@
 from aiohttp import web
-import redis
-import aioredis
-import json
+
+from globals import getCAPubKey, getConnectionKeys, postConnectionKeys, showKeys, updateSessionKey
+from certificate_operations import verifyCertificate
 
 nonce_router = web.RouteTableDef()
 
+
 @nonce_router.post("/set_Nonce")
-
 async def nonce_code(request):
-     conn = await aioredis.create_connection('redis://localhost')
-     nonce = await request.json()
+    """
+    request: {
+        id: ...
+        nonce: ...
+        sign: hecha por el sensor
+    }
+    """
+    data = await request.json()
+    sensor_id = data["id"]
 
-    print("El nonce es: ", nonce)
+    keys = getConnectionKeys(sensor_id)
+
+    CA_pub = getCAPubKey()
+
+    # Verificamos la firma del sensor.
+    if(verifyCertificate(data, keys["sensor_pub"]) == False):
+        print("El certificado no es válido")
+        return web.json_response({"status": "NOK"})
+
+    # Creamos la llave de sesión
+    nonce = int.from_bytes(data["nonce"], "big")
+    updateSessionKey(sensor_id, nonce)
+
+    # depuración
+    showKeys()
