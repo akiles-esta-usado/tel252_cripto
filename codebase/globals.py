@@ -76,9 +76,11 @@ def setKeys(id):
     keys = getConnectionKeys(id)
 
     keys["server_priv"] = ECC.generate(curve="p256")
-    keys["server_pub"] = keys["priv"].public_key()
+    keys["server_pub"] = keys["server_priv"].public_key()
 
-    # guardar en algún archivo.
+    postConnectionKeys(id, keys)
+
+    return keys
 
 
 def showKeys():
@@ -91,5 +93,9 @@ def showKeys():
         print("")
 
     for label in key_db.keys():
-        print(f"{label}: {CA_keys[label]}")
-        print("")
+        print(f"{label}:")
+
+        for key_name in key_db[label].keys():
+            print(f"  {key_name}: {type(key_db[label][key_name])}")
+            print(f"  {key_db[label][key_name]}")
+            print("")
