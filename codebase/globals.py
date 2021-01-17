@@ -83,6 +83,14 @@ def setKeys(id):
     return keys
 
 
+def getSessionKey(id):
+    global key_db
+
+    label = f"sensor{id}"
+
+    return key_db[label]["shared_session"]
+
+
 def showKeys():
     global CA_keys
     global key_db
