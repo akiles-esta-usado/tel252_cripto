@@ -39,7 +39,3 @@ async def nonce_code(request):
     return web.json_response({
         "status": "OK"
     })
-
-    # depuración
-    print("nonce.nonce_handler:")
-    showKeys()

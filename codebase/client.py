@@ -5,13 +5,9 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import ECC
 from Crypto.Random import get_random_bytes
 
-import base64
-
 from certificate_operations import obtainCertificate, verifyCertificate, generateSign
 
 from globals import URL
-
-# from certificate_operations import gen_cert, ver_cert
 
 keys = {
     "CA_pub": None,
@@ -33,6 +29,35 @@ def setKeys():
 
     keys["priv"] = ECC.generate(curve="p256")
     keys["pub"] = keys["priv"].public_key()
+
+
+def showKeys(label=""):
+    global keys
+
+    if (label == ""):
+        for key_name in keys.keys():
+            print(f"  {key_name}: {type(keys[key_name])}")
+            print(f"  {keys[key_name]}")
+            print("")
+        return
+
+    print(f"  {label}: {type(keys[label])}")
+    print(f"  {keys[label]}")
+    print("")
+
+
+def updateSessionKey(nonce=-1):
+    global keys
+    prev = None
+    if (nonce == -1):
+        prev = keys["session"]
+        pass
+
+    else:
+        prev = nonce.to_bytes(16, "big")
+
+    cipher = AES.new(keys["master"], mode=AES.MODE_ECB)
+    keys["session"] = cipher.encrypt(prev)
 
 
 async def main():
@@ -64,11 +89,7 @@ async def main():
         keys["secret_shared"] = keys["priv"].d * k_pub_server.pointQ
         keys['master'] = keys["secret_shared"].x.to_bytes()[0:16]
 
-        # print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
-        # print(f'llave maestra :{keys["master"]}')
-
-
-# ------>PROBLEMA AQUI CON EL NONCE Y AL SETEAR LAS LLAVES DE SESION
+        # Enviar el Nonce
         nonce = int.from_bytes(get_random_bytes(16), "big")  # NONCE
 
         message_nonce = {
@@ -79,30 +100,19 @@ async def main():
         # Firmar Nonce con ID
         message_nonce["sign"] = generateSign(message_nonce, keys["priv"])
 
+        # Enviamos nonce
         nonce_res = await session.post(URL + "set_Nonce", json=message_nonce)
         data = await nonce_res.json()
-        print("Datos dados:", data)
 
-        return
-
-        # Generar la llave de sesión
-
-        return
-
-        print(f"Certificado de servidor: {server_cert}")
-
-        if(verifyCertificate(server_cert, keys["CA_pub"]) == False):
-            print("El certificado no es válido")
+        if (data["status"] == "NOK"):
+            print("Nonce no fué aceptado")
             exit(-1)
 
-        # Generación de llaves secreta conjunta
+        # generamos la primera llave de sesión
+        updateSessionKey(nonce)
 
-        # Generación de llaves de sesión
+        return
 
-    return
-
-    async with ClientSession() as session:
-        await gets(session)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
