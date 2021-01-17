@@ -24,6 +24,7 @@ async def make_app():
     app.add_routes(index_router)
     app.add_routes(cert_router)
     app.add_routes(exchange_router)
+    app.add_routes(nonce_router)
 
     return app
 

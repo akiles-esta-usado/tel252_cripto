@@ -59,7 +59,7 @@ async def shared_key_handler(request):
 
     K_shared_secret = keys["priv"].d * K_pub_sensor.pointQ
 
-    K_master = K_shared_secret.x.to_bytes()[0:15]
+    K_master = K_shared_secret.x.to_bytes()[0:16]
 
     print(f"llave secreta compartida (x) :{K_shared_secret.x}")
     print(f"llave maestra :{K_master}")

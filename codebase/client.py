@@ -67,8 +67,8 @@ async def main():
         keys["secret_shared"] = keys["priv"].d * k_pub_server.pointQ
         keys['master'] = keys["secret_shared"].x.to_bytes()[0:16]
 
-        # print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
-        # print(f'llave maestra :{keys["master"]}')
+        print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
+        print(f'llave maestra :{keys["master"]}')
 
         # keys['session'] = updateSessionKey(keys['master'], keys['session'])
         # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
@@ -81,7 +81,7 @@ async def main():
                 "sign": my_cert['sign']
                 }
             res_myid = await session.post(URL + "setNonce", json=my_id)
-            print("Datos dados:", res_myid.json())
+            # print("Datos dados:", res_myid.json())
 
         return
 
