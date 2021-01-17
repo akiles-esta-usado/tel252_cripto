@@ -1,6 +1,5 @@
 from aiohttp import web
-import redis
-import aioredis
+from globals import getCAPrivKey
 
 from Crypto.PublicKey import ECC
 from Crypto.Hash import SHA256
@@ -13,13 +12,10 @@ cert_router = web.RouteTableDef()
 
 @cert_router.post("/get_cert")
 async def cert_handle_get(request):
-    conn = await aioredis.create_connection(
-        'redis://localhost')
+
     data = await request.json()
 
-    ca_k_pr = ECC.import_key(
-        await conn.execute('GET', 'ca_priv_key', encoding="utf-8")
-    )
+    ca_k_pr = getCAPrivKey()
 
     id = data["id"]
     k_pub = data["k_pub"]

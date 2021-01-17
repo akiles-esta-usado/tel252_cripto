@@ -7,9 +7,7 @@ from Crypto.Random import get_random_bytes
 
 from certificate_operations import obtainCertificate, verifyCertificate
 
-from functions import updateSessionKey
-
-from constants import URL
+from globals import URL
 
 # from certificate_operations import gen_cert, ver_cert
 
@@ -67,8 +65,8 @@ async def main():
         keys["secret_shared"] = keys["priv"].d * k_pub_server.pointQ
         keys['master'] = keys["secret_shared"].x.to_bytes()[0:16]
 
-        # print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
-        # print(f'llave maestra :{keys["master"]}')
+        print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
+        print(f'llave maestra :{keys["master"]}')
 
         # keys['session'] = updateSessionKey(keys['master'], keys['session'])
         # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
