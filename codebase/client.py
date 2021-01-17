@@ -72,6 +72,16 @@ async def main():
 
         # keys['session'] = updateSessionKey(keys['master'], keys['session'])
         # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
+        
+        keys['session'] = int.from_bytes(get_random_bytes(16), "big")  # NONCE
+
+        if(my_cert != None):
+            my_id = {
+                "NONCE": keys['session'],
+                "sign": my_cert['sign']
+                }
+            res_myid = await session.post(URL + "setNonce", json=my_id)
+            print("Datos dados:", res_myid.json())
 
         return
 
