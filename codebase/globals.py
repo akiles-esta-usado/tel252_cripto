@@ -62,9 +62,11 @@ def updateSessionKey(id, nonce=-1):
         last_session = keys["shared_session"]
 
     else:
-        last_session = nonce
+        last_session = nonce.to_bytes(16, "big")
 
     cipher = AES.new(keys["shared_master"], mode=AES.MODE_ECB)
+
+    print(f"globals.updateSessionKey: cipher={cipher}")
     keys["shared_session"] = cipher.encrypt(last_session)
 
     postConnectionKeys(id, keys)

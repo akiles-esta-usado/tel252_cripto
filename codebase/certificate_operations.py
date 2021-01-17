@@ -7,6 +7,54 @@ import json
 from globals import URL
 
 
+def generateSign(msg, k_priv):
+    """
+    msg: es un diccionario
+    k_priv: llave pública instancia de EccKey
+
+    Esta función retorna una tupla:
+    sign <str>: La firma en base 64.
+    hash_digest <SHA256Hash>: Objeto hash del mensaje.
+    """
+
+    hash = SHA256.new(
+        json.dumps(msg).encode('utf-8')
+    )
+
+    signer = DSS.new(k_priv, 'fips-186-3')
+    msg_sign = signer.sign(hash)
+
+    return (base64.urlsafe_b64encode(msg_sign).decode("utf-8"))
+
+
+def verifyNonce(cert, k_pub):
+    """
+    cert: {
+        id: string, number
+        k_pub: 
+        sign: bytes
+    }
+    """
+    message = {
+        "id": cert["id"],
+        "nonce": cert["nonce"]
+    }
+
+    bytes_message = json.dumps(message).encode('utf-8')
+    h = SHA256.new(bytes_message)
+
+    sign = base64.urlsafe_b64decode(cert["sign"])
+
+    verifier = DSS.new(k_pub, 'fips-186-3')
+
+    try:
+        verifier.verify(h, sign)
+        return True
+
+    except ValueError:
+        return False
+
+
 def verifyCertificate(cert, k_pub):
     """
     cert: {

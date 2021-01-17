@@ -3,18 +3,18 @@ from aiohttp import web
 from routes.index import index_router
 from routes.certificates import cert_router
 from routes.key_exchange import exchange_router
+from routes.nonce import nonce_router
 
 
 async def make_app():
     app = web.Application()
 
     setCAKeys()
-    showKeys()
 
     app.add_routes(index_router)
     app.add_routes(cert_router)
     app.add_routes(exchange_router)
-    # app.add_routes(nonce_router)
+    app.add_routes(nonce_router)
 
     return app
 

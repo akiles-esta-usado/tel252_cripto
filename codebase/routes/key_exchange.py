@@ -43,6 +43,4 @@ async def shared_key_handler(request):
 
     postConnectionKeys(sensor_id, keys)
 
-    showKeys()
-
     return web.json_response(my_cert)

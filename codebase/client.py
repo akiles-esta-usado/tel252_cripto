@@ -5,7 +5,9 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import ECC
 from Crypto.Random import get_random_bytes
 
-from certificate_operations import obtainCertificate, verifyCertificate
+import base64
+
+from certificate_operations import obtainCertificate, verifyCertificate, generateSign
 
 from globals import URL
 
@@ -31,9 +33,6 @@ def setKeys():
 
     keys["priv"] = ECC.generate(curve="p256")
     keys["pub"] = keys["priv"].public_key()
-    keys['session'] = int.from_bytes(get_random_bytes(16), "big")  # NONCE
-
-    # guardar en algún archivo.
 
 
 async def main():
@@ -65,24 +64,24 @@ async def main():
         keys["secret_shared"] = keys["priv"].d * k_pub_server.pointQ
         keys['master'] = keys["secret_shared"].x.to_bytes()[0:16]
 
-        print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
-        print(f'llave maestra :{keys["master"]}')
+        # print(f'llave secreta compartida (x) :{keys["secret_shared"].x}')
+        # print(f'llave maestra :{keys["master"]}')
 
-        # keys['session'] = updateSessionKey(keys['master'], keys['session'])
-        # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
-        
 
-##------>PROBLEMA AQUI CON EL NONCE Y AL SETEAR LAS LLAVES DE SESION
-        keys['session'] = int.from_bytes(get_random_bytes(16), "big")  # NONCE
+# ------>PROBLEMA AQUI CON EL NONCE Y AL SETEAR LAS LLAVES DE SESION
+        nonce = int.from_bytes(get_random_bytes(16), "big")  # NONCE
 
-        if(my_cert != None):
-            my_id = {
-                "id":ID0,
-                "NONCE": keys['session'],
-                "sign": my_cert['sign']
-                }
-            res_myid = await session.post(URL + "set_Nonce", json=my_id)
-            # print("Datos dados:", res_myid.json())
+        message_nonce = {
+            "id": ID0,
+            "nonce": nonce
+        }
+
+        # Firmar Nonce con ID
+        message_nonce["sign"] = generateSign(message_nonce, keys["priv"])
+
+        nonce_res = await session.post(URL + "set_Nonce", json=message_nonce)
+        data = await nonce_res.json()
+        print("Datos dados:", data)
 
         return
 
