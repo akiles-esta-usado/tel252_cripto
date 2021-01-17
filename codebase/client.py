@@ -71,6 +71,8 @@ async def main():
         # keys['session'] = updateSessionKey(keys['master'], keys['session'])
         # print(f"Llaves de sesión: {int.from_bytes(keys['session'],'big')}")
         
+
+##------>PROBLEMA AQUI CON EL NONCE Y AL SETEAR LAS LLAVES DE SESION
         keys['session'] = int.from_bytes(get_random_bytes(16), "big")  # NONCE
 
         if(my_cert != None):
@@ -82,11 +84,11 @@ async def main():
             res_myid = await session.post(URL + "set_Nonce", json=my_id)
             # print("Datos dados:", res_myid.json())
 
-        #return
+        return
 
         # Generar la llave de sesión
 
-        #return
+        return
 
         print(f"Certificado de servidor: {server_cert}")
 

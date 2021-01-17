@@ -5,7 +5,7 @@ from certificate_operations import verifyCertificate
 
 nonce_router = web.RouteTableDef()
 
-
+##----->NO ENTRA A ESTE ARCHIVO EL CODIGO
 @nonce_router.post("/set_Nonce")
 async def nonce_code(request):
     """
@@ -19,6 +19,10 @@ async def nonce_code(request):
     data = await request.json()
     sensor_id = data["id"]
 
+##-------->SUPOSICION-> TALVEZ HAY PROBLEMA AL PEDIR LAS KEYS, DEBIDO A LOS CONDICIONALES QUE HAY EN LA FUNCION
+    ##              getConnectionKeys()
+
+
     keys = getConnectionKeys(sensor_id)
 
     CA_pub = getCAPubKey()
@@ -31,6 +35,10 @@ async def nonce_code(request):
     # Creamos la llave de sesión
     nonce = int.from_bytes(data["nonce"], "big")
     updateSessionKey(sensor_id, nonce)
+
+
+##------>PROBLEMA, NO MUESTRA LAS KEYS
+
 
     # depuración
     showKeys()
