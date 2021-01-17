@@ -15,6 +15,7 @@ async def nonce_code(request):
         sign: hecha por el sensor
     }
     """
+
     data = await request.json()
     sensor_id = data["id"]
 
@@ -33,3 +34,4 @@ async def nonce_code(request):
 
     # depuración
     showKeys()
+    print('Llave mosttradas')

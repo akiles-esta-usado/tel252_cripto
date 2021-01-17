@@ -75,17 +75,18 @@ async def main():
 
         if(my_cert != None):
             my_id = {
+                "id":ID0,
                 "NONCE": keys['session'],
                 "sign": my_cert['sign']
                 }
-            res_myid = await session.post(URL + "setNonce", json=my_id)
+            res_myid = await session.post(URL + "set_Nonce", json=my_id)
             # print("Datos dados:", res_myid.json())
 
-        return
+        #return
 
         # Generar la llave de sesión
 
-        return
+        #return
 
         print(f"Certificado de servidor: {server_cert}")
 
