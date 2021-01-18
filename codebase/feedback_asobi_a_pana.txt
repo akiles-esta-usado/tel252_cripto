@@ -1,0 +1,19 @@
+Feedback otorgado por el equipo Asobi al equipo Pana:
+
+Se aprecio una implementacion bastante completa de lo 
+que implica todo el proceso de encriptacion y desencriptacion
+
+Lo conocimientos aprendidos en clase se ven implementados de 
+buena manera, desde la existencia de un organismo 
+certificador completamente funcional, hasta el uso de una encriptacion
+mediante el protocolo Aes Gcm
+
+se aprecia un buen uso de las llaves privadas y publicas, 
+necesarias para la correcta aplicacion del un cifrado 
+simetrico, el cual es bien usado en su algoritmo
+
+el trabajo para que la autoridad certificadora se encargue de asegurar
+que el cliente y el servidor sean quienes corresponden se encuentra muy bien
+implementado, dandole mucha seguridad al trabajo realizado
+
+muchas felicitaciones, es un gran trabajo.
