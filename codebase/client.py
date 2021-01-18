@@ -35,7 +35,7 @@ async def to_server(file):
 
         id = ID0.to_bytes(1, "big")
 
-        print(msg)
+        print(f"Se envia el mensaje: {str(msg)}")
 
         # Setear el cifrador
         cipher = AES.new(keys["session"], mode=AES.MODE_GCM)
